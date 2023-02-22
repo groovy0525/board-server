@@ -29,7 +29,7 @@ export class UsersService {
     });
 
     if (existsNickname) {
-      throw new ConflictException('이미 사용중인 이메일 입니다.');
+      throw new ConflictException('이미 사용중인 닉네임 입니다.');
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -50,6 +50,10 @@ export class UsersService {
 
   findOneByEmail(email: string) {
     return this.userRepository.findOne({ where: { email } });
+  }
+
+  validatePassword(password: string, user: User) {
+    return bcrypt.compare(password, user.password);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
