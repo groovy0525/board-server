@@ -2,6 +2,7 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { SignInUserDto } from './dto/sign-user.dto';
+import { Payload } from './payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -27,22 +28,34 @@ export class AuthService {
       );
     }
 
-    // jwt 생성
+    const payload: Payload = {
+      email: user.email,
+      nickname: user.nickname,
+      sub: user.id,
+    };
+
+    const access_token = this.createToken(
+      payload,
+      process.env.ACCESS_SECRET,
+      '30m',
+    );
+    const refresh_token = this.createToken(
+      payload,
+      process.env.REFRESH_SECRET,
+      '2w',
+    );
+
+    return {
+      access_token,
+      refresh_token,
+      user: payload,
+    };
   }
 
-  // async validateUser(username: string, pass: string): Promise<any> {
-  //   const user = await this.usersService.findOne(username);
-  //   if (user && user.password === pass) {
-  //     const { password, ...result } = user;
-  //     return result;
-  //   }
-  //   return null;
-  // }
-
-  // async login(user: any) {
-  //   const payload = { username: user.username, sub: user.userId };
-  //   return {
-  //     access_token: this.jwtService.sign(payload),
-  //   };
-  // }
+  createToken(payload: Payload, secret: string, expiresIn: string) {
+    return this.jwtService.sign(payload, {
+      secret,
+      expiresIn,
+    });
+  }
 }
