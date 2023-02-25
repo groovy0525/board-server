@@ -1,33 +1,29 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { Post } from 'src/posts/entities/post.entity';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export class User {
+export class Post {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  @IsNotEmpty()
   @IsString()
-  @IsNotEmpty()
-  @Column()
-  password: string;
+  title: string;
 
-  @IsEmail()
-  @IsNotEmpty()
   @Column()
-  email: string;
-
+  @IsNotEmpty()
   @IsString()
-  @IsNotEmpty()
-  @Column()
-  nickname: string;
+  content: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -35,6 +31,7 @@ export class User {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @OneToMany(() => Post, (post) => post.user)
-  posts: Post[];
+  @ManyToOne(() => User, (user) => user.posts)
+  @JoinColumn({ name: 'author_id' })
+  user: User;
 }
