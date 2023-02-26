@@ -5,11 +5,16 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { PostsModule } from './posts/posts.module';
+import { User } from './users/entities/user.entity';
+import { Post } from './posts/entities/post.entity';
+import { CommentsModule } from './comments/comments.module';
+import { Comment } from './comments/entities/comment.entity';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    UsersModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DATABASE_HOST,
@@ -19,12 +24,14 @@ import { PostsModule } from './posts/posts.module';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      entities: [User, Post, Comment],
       synchronize: true,
       logging: true,
     }),
+    UsersModule,
     AuthModule,
     PostsModule,
+    CommentsModule,
   ],
 })
 export class AppModule implements NestModule {

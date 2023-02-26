@@ -22,4 +22,8 @@ export class PostsService {
 
     return '게시글 생성 성공';
   }
+
+  async findOne(id: number) {
+    return this.postRepository.findOne({ where: { id } });
+  }
 }
